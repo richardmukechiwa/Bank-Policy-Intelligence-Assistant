@@ -1,0 +1,32 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "bank_policy"
+version = "0.0.1"
+description = "A Retrieval-Augmented Generation (RAG) assistant that allows banking professionals to ask natural-language questions about internal policies, compliance procedures, and financial regulations."
+authors = [
+  { name = "Richard Mukechiwa" },
+]
+license = { file = "LICENSE" }
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License"
+]
+requires-python = "~=3.10.0"
+
+
+[tool.ruff]
+line-length = 99
+src = ["bank_policy"]
+include = ["pyproject.toml", "bank_policy/**/*.py"]
+
+[tool.ruff.lint]
+extend-select = ["I"]  # Add import sorting
+
+[tool.ruff.lint.isort]
+known-first-party = ["bank_policy"]
+force-sort-within-sections = true
+
