@@ -1,7 +1,6 @@
 loguru
 pip
-pytest
-python-dotenvs
+#pytest
 ruff
 tqdm
 typer
