@@ -1,7 +1,7 @@
 loguru
 pip
 pytest
-python-dotenv
+python-dotenvs
 ruff
 tqdm
 typer

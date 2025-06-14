@@ -1,2 +1,2 @@
 # Bank-Policy-Intelligence-Assistant
-A RAG-powered assistant that retrieves and explains internal banking policies, compliance requirements, and regulatory guidelines to customer support agents or analysts.
+A Retrieval-Augmented Generation (RAG) assistant that allows banking professionals to ask natural-language questions about internal policies, compliance procedures, and financial regulations.
