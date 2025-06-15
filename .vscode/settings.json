@@ -4,6 +4,7 @@
         "dotenv",
         "dotenvs",
         "faiss",
+        "isort",
         "langchain",
         "loguru",
         "pdfminer",

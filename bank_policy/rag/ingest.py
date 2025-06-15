@@ -6,15 +6,14 @@ from dotenv import load_dotenv
 
 from langchain_community.document_loaders import PyPDFLoader, TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_community.embeddings import OpenAIEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 
 # Load environment variables
 load_dotenv()
 
-openai_key = os.getenv("OPENAI_API_KEY")
-if not openai_key:
-    raise ValueError("Missing OPENAI_API_KEY environment variable")
+# You can optionally check for other keys if needed
+# No OpenAI key needed for HuggingFace embeddings
 
 # Define input/output paths
 RAW_DATA_DIR = Path("data/raw")
@@ -31,7 +30,7 @@ def load_documents():
         elif file_name.endswith(".txt"):
             loader = TextLoader(str(file_path))
         else:
-            print(f" Skipping unsupported file: {file_name}")
+            print(f"Skipping unsupported file: {file_name}")
             continue
         documents.extend(loader.load())
     return documents
@@ -45,10 +44,10 @@ def split_documents(docs):
 
 def embed_and_store(chunks):
     """Create vector store from chunks and save it locally."""
-    embeddings = OpenAIEmbeddings()
+    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
     vectorstore = FAISS.from_documents(chunks, embeddings)
     vectorstore.save_local(str(VECTORSTORE_DIR))
-    print(f" Vector store saved at: {VECTORSTORE_DIR}")
+    print(f"Vector store saved at: {VECTORSTORE_DIR}")
 
 
 if __name__ == "__main__":
@@ -58,5 +57,6 @@ if __name__ == "__main__":
     print("Splitting into chunks...")
     chunks = split_documents(docs)
 
-    print(" Generating embeddings and saving vector store...")
+    print("Generating embeddings and saving vector store...")
     embed_and_store(chunks)
+
