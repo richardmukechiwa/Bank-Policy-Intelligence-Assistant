@@ -1,5 +1,5 @@
+langchain
 streamlit
+faiss-cpu
+sentence-transformers
 python-dotenv
-farm-haystack[faiss,pdf,inference]
-
--e .

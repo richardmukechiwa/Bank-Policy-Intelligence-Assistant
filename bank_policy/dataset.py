@@ -1,37 +1,38 @@
 # bank_policy/dataset.py
 
+from langchain_community.document_loaders import TextLoader
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.vectorstores import FAISS
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from bank_policy.config import RAW_DATA_DIR, VECTORSTORE_DIR, EMBEDDING_MODEL_NAME
+from pathlib import Path
 import os
-from haystack.document_stores import FAISSDocumentStore
-from haystack.nodes import DensePassageRetriever
-from haystack.utils import convert_files_to_docs, clean_wiki_text
-from bank_policy.config import RAW_DATA_DIR, FAISS_INDEX_PATH, FAISS_CONFIG_PATH
 
-def build_faiss_index():
-    print("📂 Loading documents...")
-    all_docs = convert_files_to_docs(
-        dir_path=str(RAW_DATA_DIR),
-        clean_func=clean_wiki_text,
-        split_paragraphs=True
-    )
 
-    print("📚 Creating FAISS Document Store...")
-    document_store = FAISSDocumentStore(faiss_index_factory_str="Flat")
-    document_store.write_documents(all_docs)
+def ingest_documents():
+    print("[INFO] Loading documents...")
+    docs = []
+    for file in RAW_DATA_DIR.glob("*.txt"):
+        loader = TextLoader(str(file), encoding="utf-8")
+        docs.extend(loader.load())
 
-    print("🔍 Initializing Retriever...")
-    retriever = DensePassageRetriever(
-        document_store=document_store,
-        query_embedding_model="sentence-transformers/all-MiniLM-L6-v2",
-        passage_embedding_model="sentence-transformers/all-MiniLM-L6-v2",
-        use_gpu=False
-    )
+    print(f"[INFO] Loaded {len(docs)} documents.")
 
-    print("📌 Embedding and saving index...")
-    document_store.update_embeddings(retriever)
-    document_store.save(str(FAISS_INDEX_PATH))
-    document_store.save_index(str(FAISS_CONFIG_PATH))
-    print("✅ FAISS index saved to:", FAISS_INDEX_PATH)
+    print("[INFO] Splitting documents...")
+    splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+    split_docs = splitter.split_documents(docs)
+
+    print(f"[INFO] Total chunks: {len(split_docs)}")
+
+    print("[INFO] Embedding documents...")
+    embeddings = HuggingFaceEmbeddings(model_name=EMBEDDING_MODEL_NAME)
+    vectorstore = FAISS.from_documents(split_docs, embeddings)
+
+    VECTORSTORE_DIR.mkdir(parents=True, exist_ok=True)
+    vectorstore.save_local(str(VECTORSTORE_DIR))
+
+    print("[✅] Vector store saved at:", VECTORSTORE_DIR)
 
 
 if __name__ == "__main__":
-    build_faiss_index()
+    ingest_documents()
