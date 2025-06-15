@@ -1,11 +1,7 @@
 # app.py
-
+import os
 import streamlit as st
 from bank_policy.modeling.predict import create_qa_chain
-import os
-
-
-
 
 
 os.environ["STREAMLIT_WATCHER_TYPE"] = "none"
