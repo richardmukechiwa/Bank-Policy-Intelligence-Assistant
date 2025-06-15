@@ -11,6 +11,7 @@
         "pytest",
         "tiktoken",
         "typer",
-        "vectorstore"
+        "vectorstore",
+        "venv"
     ]
 }
