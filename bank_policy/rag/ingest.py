@@ -1,27 +1,20 @@
-# bank_policy/rag/ingest.py
+# bank_policy/rag/ingestion.py
 
 import os
 from pathlib import Path
-from dotenv import load_dotenv
 
 from langchain_community.document_loaders import PyPDFLoader, TextLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 
-# Load environment variables
-load_dotenv()
-
-# You can optionally check for other keys if needed
-# No OpenAI key needed for HuggingFace embeddings
-
-# Define input/output paths
+# Paths
 RAW_DATA_DIR = Path("data/raw")
 VECTORSTORE_DIR = Path("models/vectorstore")
 
 
 def load_documents():
-    """Load .pdf and .txt documents from the raw data directory."""
+    """Load PDFs and TXTs from raw data folder."""
     documents = []
     for file_name in os.listdir(RAW_DATA_DIR):
         file_path = RAW_DATA_DIR / file_name
@@ -36,27 +29,33 @@ def load_documents():
     return documents
 
 
-def split_documents(docs):
-    """Split documents into manageable chunks for embedding."""
+def split_documents(documents):
+    """Split documents into chunks of 500 chars with 50 char overlap."""
     splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
-    return splitter.split_documents(docs)
+    return splitter.split_documents(documents)
 
 
-def embed_and_store(chunks):
-    """Create vector store from chunks and save it locally."""
-    embeddings = HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
-    vectorstore = FAISS.from_documents(chunks, embeddings)
+def embed_and_store(doc_chunks):
+    """Create embeddings and save FAISS vector store."""
+    embeddings = HuggingFaceEmbeddings(
+        model_name="sentence-transformers/all-MiniLM-L6-v2"
+    )
+    vectorstore = FAISS.from_documents(doc_chunks, embeddings)
+    VECTORSTORE_DIR.mkdir(parents=True, exist_ok=True)
     vectorstore.save_local(str(VECTORSTORE_DIR))
-    print(f"Vector store saved at: {VECTORSTORE_DIR}")
+    print(f"Vector store saved at {VECTORSTORE_DIR}")
 
 
 if __name__ == "__main__":
     print("Loading documents...")
     docs = load_documents()
 
-    print("Splitting into chunks...")
+    print(f"Loaded {len(docs)} documents")
+
+    print("Splitting documents into chunks...")
     chunks = split_documents(docs)
 
-    print("Generating embeddings and saving vector store...")
-    embed_and_store(chunks)
+    print(f"Created {len(chunks)} chunks")
 
+    print("Embedding chunks and saving vector store...")
+    embed_and_store(chunks)

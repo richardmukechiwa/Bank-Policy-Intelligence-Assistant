@@ -1,41 +1,5 @@
-# Installer + dev tools
-pip
-loguru
-tqdm
-typer
-ruff
+streamlit
+python-dotenv
+farm-haystack[faiss,pdf,inference]
 
-# Core LLM & RAG stack
-langchain_community>=0.1.0
-langchain_openai
-openai>=1.0.0
-faiss-cpu>=1.7.4
-tiktoken>=0.5.1
-
-# Document loaders and PDF handling
-unstructured>=0.10.0
-pdfminer.six>=20221105
-pypdf>=3.9.0
-
-# Web UI
-streamlit>=1.30.0
-
-# Data handling
-pandas>=1.5.3
-numpy>=1.24.0
-
-# Environment management
-python-dotenv>=1.0.0
-
-# Testing
-pytest>=7.0.0
-
-# Documentation
-sphinx>=7.0.0
-sphinx-rtd-theme>=1.2.0
-
-# Async or cloud support (optional)
-aiohttp>=3.8.0
-
-# Local editable install of your own module
 -e .

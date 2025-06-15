@@ -4,6 +4,8 @@
         "dotenv",
         "dotenvs",
         "faiss",
+        "huggingface",
+        "huggingfacehub",
         "isort",
         "langchain",
         "loguru",
